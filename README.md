@@ -1,20 +1,92 @@
-<<<<<<< HEAD
-# React + Vite
+# 🎉 Event Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dự án hệ thống quản lý sự kiện được xây dựng bằng **React + Vite**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Cách chạy dự án
 
-## React Compiler
+Sau khi clone project về máy, chạy các lệnh sau:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd EVENT-SYSTEM
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Sau đó mở link hiển thị trong terminal (thường là):
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# QLDA
->>>>>>> c0f11f399948d2140d6b52ab5d9aa61416b417be
+http://localhost:5173
+
+```
+
+---
+
+## 📌 Lưu ý
+
+- Sau khi chạy `npm run dev`, có thể nhấn:
+```
+
+h + Enter
+
+```
+để xem danh sách lệnh hỗ trợ của Vite.
+
+Sau đó nhấn:
+```
+
+o + Enter
+
+```
+để mở project trực tiếp trên trình duyệt.
+
+---
+
+## 📂 Cấu trúc project
+
+```
+
+src
+├── components   # Các component dùng chung
+├── layouts      # Layout hệ thống (Header, Sidebar)
+├── pages        # Các trang theo từng role
+├── mockData.jsx # Dữ liệu giả lập
+├── App.jsx
+└── main.jsx
+
+```
+
+---
+
+## 👥 Hướng dẫn cho thành viên trong nhóm
+
+- Dữ liệu sử dụng từ file:
+```
+
+mockData.jsx
+
+```
+
+- Trong thư mục `pages` đã có sẵn:
+- Các **user**
+- Một số **chức năng (chưa đầy đủ)**
+
+Mọi người cần:
+
+1. Thêm dữ liệu cho đầy đủ
+2. Nếu thiếu chức năng thì tạo thêm
+3. Khi thêm chức năng mới phải cập nhật ở:
+
+- `Sidebar`
+- `Header`
+- `App.jsx`
+
+---
+
+## ⚠️ Lưu ý quan trọng
+
+Đoạn code hiện tại **chỉ là demo**.  
+Mọi người chỉnh sửa lại theo đúng chức năng của hệ thống.
+
+---

@@ -13,20 +13,77 @@ export const events = [
   {
     id: 1,
     name: "Hội thảo AI 2025",
+    client: "Đại học Công nghệ",
     date: "20/05/2025",
     location: "Hà Nội",
+    speaker: "TS. Nguyễn Văn A",
+    budget: 50000000,
     status: "Đang chuẩn bị",
     approved: false,
-    progress: 60
+    progress: 60,
+    participants: 120,
+    ticketsSold: 80,
+    marketingStatus: "Đang chạy quảng bá"
   },
   {
     id: 2,
     name: "Gala Sinh viên",
+    client: "Đại học Kinh tế",
     date: "10/06/2025",
     location: "TP.HCM",
+    speaker: "MC Trấn Thành",
+    budget: 80000000,
     status: "Đang triển khai",
     approved: true,
-    progress: 80
+    progress: 80,
+    participants: 300,
+    ticketsSold: 250,
+    marketingStatus: "Đã hoàn tất"
+  },
+  {
+    id: 3,
+    name: "Workshop Khởi nghiệp",
+    client: "Startup Hub",
+    date: "25/06/2025",
+    location: "Đà Nẵng",
+    speaker: "CEO Nguyễn Minh",
+    budget: 30000000,
+    status: "Chờ phê duyệt",
+    approved: false,
+    progress: 20,
+    participants: 60,
+    ticketsSold: 30,
+    marketingStatus: "Chưa triển khai"
+  },
+  {
+    id: 4,
+    name: "Triển lãm Công nghệ",
+    client: "Tech Group",
+    date: "15/07/2025",
+    location: "Hà Nội",
+    speaker: "Nhiều diễn giả",
+    budget: 120000000,
+    status: "Đang chuẩn bị",
+    approved: true,
+    progress: 40,
+    participants: 500,
+    ticketsSold: 200,
+    marketingStatus: "Đang quảng bá"
+  },
+  {
+    id: 5,
+    name: "Ngày hội Tuyển dụng",
+    client: "FPT Software",
+    date: "01/08/2025",
+    location: "TP.HCM",
+    speaker: "HR Manager",
+    budget: 60000000,
+    status: "Chưa bắt đầu",
+    approved: true,
+    progress: 10,
+    participants: 150,
+    ticketsSold: 70,
+    marketingStatus: "Đang chạy ads"
   }
 ];
 

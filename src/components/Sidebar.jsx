@@ -81,12 +81,14 @@ const Sidebar = ({ role }) => {
     <div
       style={{
         width: SIDEBAR_WIDTH,
-        height: "100vh",
+        minHeight: "100vh",
         background: BG,
         borderRight: `1px solid ${BORDER}`,
         display: "flex",
         flexDirection: "column",
         fontFamily: FONT,
+        position: "sticky",
+        top: 0,
       }}
     >
       {/* Logo */}
@@ -126,22 +128,14 @@ const Sidebar = ({ role }) => {
         </div>
       </div>
 
-      {/* Menu title */}
-      <div style={{ padding: "14px 20px 6px" }}>
-        <span
-          style={{
-            fontSize: "10px",
-            fontWeight: 700,
-            color: "#c0c0d8",
-            textTransform: "uppercase",
-          }}
-        >
-          Menu
-        </span>
-      </div>
-
       {/* Menu */}
-      <nav style={{ padding: "0 8px", flex: 1 }}>
+      <nav
+        style={{
+          padding: "10px",
+          flex: 1,
+          overflowY: "auto",
+        }}
+      >
         {links.map((link, i) => {
           const isActive = location.pathname === link.path;
           const icon = menuIcons[link.label] || "•";
@@ -161,6 +155,7 @@ const Sidebar = ({ role }) => {
                 color: isActive ? "#2563eb" : TEXT_MUTED,
                 background: isActive ? "#eef2ff" : "transparent",
                 fontWeight: isActive ? 600 : 500,
+                transition: "0.2s",
               }}
             >
               <span
@@ -184,7 +179,7 @@ const Sidebar = ({ role }) => {
       </nav>
 
       {/* Logout */}
-      <div style={{ padding: "10px" }}>
+      <div style={{ padding: "12px" }}>
         <button
           onClick={() => {
             localStorage.removeItem("currentUser");
