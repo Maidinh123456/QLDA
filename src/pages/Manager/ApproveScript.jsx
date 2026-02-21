@@ -1,4 +1,5 @@
 import styles from "./ApproveScript.module.css";
+import MainLayout from "../../layouts/MainLayout";
 
 export default function ApproveScript() {
   const scripts = [
@@ -7,47 +8,49 @@ export default function ApproveScript() {
   ];
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Phê duyệt kịch bản</h2>
+    <MainLayout>
+      <div className={styles.container}>
+        <h2 className={styles.title}>Phê duyệt kịch bản</h2>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Tên kịch bản</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {scripts.map((script) => (
-              <tr key={script.id} className={styles.row}>
-                <td>{script.title}</td>
-
-                <td>
-                  <span className={styles.badge}>
-                    {script.status}
-                  </span>
-                </td>
-
-                <td>
-                  <div className={styles.actions}>
-                    <button className={styles.approveBtn}>
-                      Duyệt
-                    </button>
-
-                    <button className={styles.rejectBtn}>
-                      Từ chối
-                    </button>
-                  </div>
-                </td>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Tên kịch bản</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
 
-        </table>
+            <tbody>
+              {scripts.map((script) => (
+                <tr key={script.id} className={styles.row}>
+                  <td>{script.title}</td>
+
+                  <td>
+                    <span className={styles.badge}>
+                      {script.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <div className={styles.actions}>
+                      <button className={styles.approveBtn}>
+                        Duyệt
+                      </button>
+
+                      <button className={styles.rejectBtn}>
+                        Từ chối
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

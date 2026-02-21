@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./AssignTask.module.css";
+import MainLayout from "../../layouts/MainLayout";
 
 /* ===== DỮ LIỆU MẪU ===== */
 const sampleTasks = [
@@ -63,84 +64,86 @@ export default function AssignTask() {
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Phân công nhiệm vụ</h2>
+    <MainLayout>
+      <div className={styles.container}>
+        <h2 className={styles.title}>Phân công nhiệm vụ</h2>
 
-      <div className={styles.layout}>
+        <div className={styles.layout}>
 
-        {/* ===== FORM ===== */}
-        <form onSubmit={handleSubmit} className={styles.formCard}>
+          {/* ===== FORM ===== */}
+          <form onSubmit={handleSubmit} className={styles.formCard}>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Tên nhiệm vụ</label>
-            <input
-              className={styles.input}
-              name="name"
-              value={task.name}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Chọn nhân viên</label>
-            <select
-              className={styles.select}
-              name="staff"
-              value={task.staff}
-              onChange={handleChange}
-            >
-              <option value="">Chọn nhân viên</option>
-              <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-              <option value="Trần Văn B">Trần Văn B</option>
-              <option value="Lê Thị C">Lê Thị C</option>
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Hạn hoàn thành</label>
-            <input
-              type="date"
-              className={styles.input}
-              name="deadline"
-              value={task.deadline}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button type="submit" className={styles.button}>
-            Giao nhiệm vụ
-          </button>
-
-        </form>
-
-        {/* ===== DANH SÁCH ===== */}
-        <div className={styles.listCard}>
-          <div className={styles.listHeader}>
-            Danh sách nhiệm vụ ({tasks.length})
-          </div>
-
-          {tasks.map(t => (
-            <div key={t.id} className={styles.taskItem}>
-              <div className={styles.taskTop}>
-                <div className={styles.taskName}>{t.name}</div>
-                <div className={styles.deadline}>{t.deadline}</div>
-              </div>
-
-              <div className={styles.staff}>
-                👤 {t.staff}
-              </div>
-
-              <button
-                onClick={() => handleDelete(t.id)}
-                className={styles.deleteBtn}
-              >
-                Xóa
-              </button>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Tên nhiệm vụ</label>
+              <input
+                className={styles.input}
+                name="name"
+                value={task.name}
+                onChange={handleChange}
+              />
             </div>
-          ))}
-        </div>
 
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Chọn nhân viên</label>
+              <select
+                className={styles.select}
+                name="staff"
+                value={task.staff}
+                onChange={handleChange}
+              >
+                <option value="">Chọn nhân viên</option>
+                <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+                <option value="Trần Văn B">Trần Văn B</option>
+                <option value="Lê Thị C">Lê Thị C</option>
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Hạn hoàn thành</label>
+              <input
+                type="date"
+                className={styles.input}
+                name="deadline"
+                value={task.deadline}
+                onChange={handleChange}
+              />
+            </div>
+
+            <button type="submit" className={styles.button}>
+              Giao nhiệm vụ
+            </button>
+
+          </form>
+
+          {/* ===== DANH SÁCH ===== */}
+          <div className={styles.listCard}>
+            <div className={styles.listHeader}>
+              Danh sách nhiệm vụ ({tasks.length})
+            </div>
+
+            {tasks.map(t => (
+              <div key={t.id} className={styles.taskItem}>
+                <div className={styles.taskTop}>
+                  <div className={styles.taskName}>{t.name}</div>
+                  <div className={styles.deadline}>{t.deadline}</div>
+                </div>
+
+                <div className={styles.staff}>
+                  👤 {t.staff}
+                </div>
+
+                <button
+                  onClick={() => handleDelete(t.id)}
+                  className={styles.deleteBtn}
+                >
+                  Xóa
+                </button>
+              </div>
+            ))}
+          </div>
+
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

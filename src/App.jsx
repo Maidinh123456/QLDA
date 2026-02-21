@@ -65,15 +65,12 @@ const App = () => {
         <Route path="/director/view-report" element={<DirectorViewReport />} />
 
         {/* ================= MANAGER ================= */}
-        <Route path="/manager" element={<MainLayout />}>
-          <Route path="dashboard" element={<ManagerDashboard />} />
-          <Route path="create-event" element={<ManagerCreateEvent />} />
-          <Route path="assign-task" element={<ManagerAssignTask />} />
-          <Route path="approve-script" element={<ManagerApproveScript />} />
-          <Route path="progress" element={<ManagerProgress />} />
-          <Route path="view-report" element={<ManagerViewReport />} />
-        </Route>
-
+        <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+        <Route path="/manager/create-event" element={<ManagerCreateEvent />} />
+        <Route path="/manager/assign-task" element={<ManagerAssignTask />} />
+        <Route path="/manager/approve-script" element={<ManagerApproveScript />} />
+        <Route path="/manager/progress" element={<ManagerProgress />} />
+        <Route path="/manager/view-report" element={<ManagerViewReport />} />
 
         {/* Marketing */}
         <Route path="/marketing/content" element={<MarketingContent />} />
