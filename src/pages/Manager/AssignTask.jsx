@@ -1,76 +1,146 @@
-import React, { useState } from 'react';
-import MainLayout from '../../layouts/MainLayout';
-import { tasks, users, events } from '../../mockData';
+import { useState } from "react";
+import styles from "./AssignTask.module.css";
 
-const sel = { width: "100%", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: "10px", padding: "11px 13px", color: "#111827", fontSize: "14px", outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif", cursor: "pointer", boxSizing: "border-box" };
-const inp = { ...sel, cursor: "text" };
+/* ===== DỮ LIỆU MẪU ===== */
+const sampleTasks = [
+  {
+    id: 1,
+    name: "Chuẩn bị sân khấu",
+    staff: "Nguyễn Văn A",
+    deadline: "2026-03-10"
+  },
+  {
+    id: 2,
+    name: "Thiết kế poster",
+    staff: "Lê Thị C",
+    deadline: "2026-03-05"
+  }
+];
 
-const AssignTask = () => {
-  const [task, setTask] = useState(''); const [staff, setStaff] = useState(''); const [event, setEvent] = useState('');
-  const [localTasks, setLocalTasks] = useState(tasks); const [flash, setFlash] = useState(false);
-  const staffUsers = users.filter(u => u.role === 'staff');
-  const handleAssign = () => {
-    if (task && staff && event) {
-      setLocalTasks([...localTasks, { id: localTasks.length + 1, eventId: parseInt(event), staff, task, done: false }]);
-      setTask(''); setStaff(''); setEvent('');
-      setFlash(true); setTimeout(() => setFlash(false), 2000);
-    }
+export default function AssignTask() {
+
+  const [task, setTask] = useState({
+    name: "",
+    staff: "",
+    deadline: ""
+  });
+
+  const [tasks, setTasks] = useState(() => {
+    const stored = localStorage.getItem("tasks");
+    return stored ? JSON.parse(stored) : sampleTasks;
+  });
+
+  const handleChange = (e) => {
+    setTask({ ...task, [e.target.name]: e.target.value });
   };
-  const ok = task && staff && event;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!task.name || !task.staff || !task.deadline) return;
+
+    const newTask = {
+      ...task,
+      id: Date.now()
+    };
+
+    const updated = [...tasks, newTask];
+
+    setTasks(updated);
+    localStorage.setItem("tasks", JSON.stringify(updated));
+
+    setTask({
+      name: "",
+      staff: "",
+      deadline: ""
+    });
+  };
+
+  const handleDelete = (id) => {
+    const filtered = tasks.filter(t => t.id !== id);
+    setTasks(filtered);
+    localStorage.setItem("tasks", JSON.stringify(filtered));
+  };
+
   return (
-    <MainLayout role="manager">
-      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#111827" }}>
-        <div style={{ marginBottom: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", boxShadow: "0 4px 12px rgba(99,102,241,0.25)" }}>⚡</div>
-            <h1 style={{ fontSize: "26px", fontWeight: 700, color: "#111827", margin: 0 }}>Phân công nhiệm vụ</h1>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Phân công nhiệm vụ</h2>
+
+      <div className={styles.layout}>
+
+        {/* ===== FORM ===== */}
+        <form onSubmit={handleSubmit} className={styles.formCard}>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Tên nhiệm vụ</label>
+            <input
+              className={styles.input}
+              name="name"
+              value={task.name}
+              onChange={handleChange}
+            />
           </div>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: "24px", alignItems: "start" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "28px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: "18px" }}>Tạo nhiệm vụ mới</div>
-            {[["SỰ KIỆN", event, setEvent, events, "Chọn sự kiện..."],["NHÂN VIÊN", staff, setStaff, staffUsers.map(u=>({id:u.id,name:u.name})), "Chọn nhân viên..."]].map(([label, val, set, opts, ph]) => (
-              <div key={label} style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", color: "#6b7280", fontSize: "11px", fontWeight: 600, marginBottom: "7px", letterSpacing: "0.5px" }}>{label}</label>
-                <select value={val} onChange={(e) => set(e.target.value)} style={sel}>
-                  <option value="">{ph}</option>
-                  {opts.map(o => <option key={o.id} value={label === "SỰ KIỆN" ? o.id : o.name}>{o.name}</option>)}
-                </select>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Chọn nhân viên</label>
+            <select
+              className={styles.select}
+              name="staff"
+              value={task.staff}
+              onChange={handleChange}
+            >
+              <option value="">Chọn nhân viên</option>
+              <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+              <option value="Trần Văn B">Trần Văn B</option>
+              <option value="Lê Thị C">Lê Thị C</option>
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Hạn hoàn thành</label>
+            <input
+              type="date"
+              className={styles.input}
+              name="deadline"
+              value={task.deadline}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" className={styles.button}>
+            Giao nhiệm vụ
+          </button>
+
+        </form>
+
+        {/* ===== DANH SÁCH ===== */}
+        <div className={styles.listCard}>
+          <div className={styles.listHeader}>
+            Danh sách nhiệm vụ ({tasks.length})
+          </div>
+
+          {tasks.map(t => (
+            <div key={t.id} className={styles.taskItem}>
+              <div className={styles.taskTop}>
+                <div className={styles.taskName}>{t.name}</div>
+                <div className={styles.deadline}>{t.deadline}</div>
               </div>
-            ))}
-            <div style={{ marginBottom: "18px" }}>
-              <label style={{ display: "block", color: "#6b7280", fontSize: "11px", fontWeight: 600, marginBottom: "7px", letterSpacing: "0.5px" }}>NỘI DUNG NHIỆM VỤ</label>
-              <input type="text" value={task} placeholder="Mô tả nhiệm vụ..." onChange={(e) => setTask(e.target.value)} style={inp}
-                onFocus={(e) => { e.target.style.borderColor = "#6366f1"; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)"; e.target.style.background = "#fff"; }}
-                onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; e.target.style.background = "#f9fafb"; }} />
+
+              <div className={styles.staff}>
+                👤 {t.staff}
+              </div>
+
+              <button
+                onClick={() => handleDelete(t.id)}
+                className={styles.deleteBtn}
+              >
+                Xóa
+              </button>
             </div>
-            {flash && <div style={{ background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "10px", padding: "10px 13px", marginBottom: "14px", color: "#059669", fontSize: "13px" }}>✓ Nhiệm vụ đã được giao!</div>}
-            <button onClick={handleAssign} disabled={!ok} style={{ width: "100%", background: ok ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "#e5e7eb", border: "none", borderRadius: "10px", padding: "12px", color: ok ? "#fff" : "#9ca3af", fontSize: "14px", fontWeight: 600, cursor: ok ? "pointer" : "not-allowed", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              ⚡ Phân công
-            </button>
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ padding: "16px 22px", borderBottom: "1px solid #f3f4f6", background: "#f9fafb", display: "flex", gap: "10px", alignItems: "center" }}>
-              <span style={{ fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px", flex: 1 }}>Tất cả nhiệm vụ</span>
-              <span style={{ background: "#ecfdf5", color: "#059669", border: "1px solid #a7f3d0", borderRadius: "20px", padding: "2px 9px", fontSize: "11px", fontWeight: 600 }}>{localTasks.filter(t=>t.done).length} xong</span>
-              <span style={{ background: "#fffbeb", color: "#d97706", border: "1px solid #fde68a", borderRadius: "20px", padding: "2px 9px", fontSize: "11px", fontWeight: 600 }}>{localTasks.filter(t=>!t.done).length} đang làm</span>
-            </div>
-            <div style={{ maxHeight: "420px", overflowY: "auto" }}>
-              {localTasks.map((t, i) => (
-                <div key={t.id} style={{ padding: "13px 22px", borderBottom: i < localTasks.length - 1 ? "1px solid #f9fafb" : "none", display: "flex", alignItems: "center", gap: "12px" }}>
-                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: t.done ? "#059669" : "#6366f1", flexShrink: 0, boxShadow: `0 0 0 3px ${t.done ? "rgba(5,150,105,0.15)" : "rgba(99,102,241,0.15)"}` }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "13px", color: t.done ? "#9ca3af" : "#111827", textDecoration: t.done ? "line-through" : "none" }}>{t.task}</div>
-                    <div style={{ fontSize: "11px", color: "#9ca3af", marginTop: "2px" }}>👤 {t.staff} · Event #{t.eventId}</div>
-                  </div>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: t.done ? "#059669" : "#d97706", background: t.done ? "#ecfdf5" : "#fffbeb", border: `1px solid ${t.done ? "#a7f3d0" : "#fde68a"}`, borderRadius: "5px", padding: "2px 8px" }}>{t.done ? "Xong" : "Đang làm"}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
+
       </div>
-    </MainLayout>
+    </div>
   );
-};
-export default AssignTask;
+}

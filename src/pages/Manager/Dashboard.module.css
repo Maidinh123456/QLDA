@@ -1,0 +1,59 @@
+.container {
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    flex: 1;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.cardTitle {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.cardValue {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 8px;
+    color: #111827;
+}
+
+.eventList {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.eventItem {
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.eventItem:last-child {
+    border-bottom: none;
+}

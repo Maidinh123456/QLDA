@@ -1,0 +1,65 @@
+.container {
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    border-radius: 20px;
+    padding: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.blue {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.green {
+    background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.red {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.value {
+    font-size: 34px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.progressBar {
+    margin-top: 14px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+}
