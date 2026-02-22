@@ -90,18 +90,35 @@ export const events = [
 // TASKS (đồng bộ staff name)
 export const tasks = [
   { id: 1, eventId: 1, staff: "Trieu", task: "Chuẩn bị âm thanh", done: false },
-  { id: 2, eventId: 1, staff: "Trieu", task: "Kiểm tra ánh sáng", done: true }
+  { id: 2, eventId: 1, staff: "Trieu", task: "Kiểm tra ánh sáng", done: true },
+  { id: 3, eventId: 2, staff: "Trieu", task: "Sắp xếp sân khấu", done: true },
+  { id: 4, eventId: 2, staff: "Trieu", task: "Tổng duyệt chương trình", done: false },
+  { id: 5, eventId: 3, staff: "Trieu", task: "Chuẩn bị bàn ghế", done: false },
+  { id: 6, eventId: 4, staff: "Trieu", task: "Kiểm tra màn hình LED", done: false }
 ];
 
 // SCRIPTS
 export const scripts = [
-  { id: 1, eventId: 1, content: "Kịch bản khai mạc", approved: false }
+  { id: 1, eventId: 1, content: "08:30 - Khai mạc, giới thiệu chương trình", approved: false },
+  { id: 2, eventId: 1, content: "09:00 - Keynote: Xu hướng AI 2025", approved: false },
+  { id: 3, eventId: 2, content: "18:00 - Đón khách, check-in, phát thẻ", approved: true },
+  { id: 4, eventId: 2, content: "19:00 - Tiết mục văn nghệ mở màn", approved: true },
+  { id: 5, eventId: 3, content: "08:00 - Workshop: Đặt vấn đề & mục tiêu", approved: false }
 ];
 
 // PARTICIPANTS
 export const participants = [
   { id: 1, eventId: 1, name: "Nguyễn Văn A", checkedIn: true },
-  { id: 2, eventId: 1, name: "Trần Thị B", checkedIn: false }
+  { id: 2, eventId: 1, name: "Trần Thị B", checkedIn: false },
+  { id: 3, eventId: 1, name: "Lê Quốc C", checkedIn: true },
+  { id: 4, eventId: 2, name: "Phạm Thị D", checkedIn: true },
+  { id: 5, eventId: 2, name: "Hoàng Văn E", checkedIn: false },
+  { id: 6, eventId: 2, name: "Đỗ Minh F", checkedIn: false },
+  { id: 7, eventId: 3, name: "Ngô Hồng G", checkedIn: false },
+  { id: 8, eventId: 3, name: "Vũ Thị H", checkedIn: true },
+  { id: 9, eventId: 4, name: "Phan Quốc I", checkedIn: false },
+  { id: 10, eventId: 4, name: "Trương Thị K", checkedIn: false },
+  { id: 11, eventId: 5, name: "Dương Văn L", checkedIn: false }
 ];
 
 // TICKETS (đổi sang eventId cho chuẩn)
@@ -117,7 +134,9 @@ export const marketingContent = [
 
 // REPORTS (đổi sang eventId)
 export const reports = [
-  { id: 1, eventId: 2, result: "Thành công", revenue: "200 triệu" }
+  { id: 1, eventId: 2, event: "Gala Sinh viên", result: "Thành công", revenue: "200 triệu", summary: "Tỷ lệ tham dự 85%, phản hồi tốt." },
+  { id: 2, eventId: 1, event: "Hội thảo AI 2025", result: "Đạt kỳ vọng", revenue: "120 triệu", summary: "Nội dung chuyên sâu, cần cải thiện âm thanh khu vực B." },
+  { id: 3, eventId: 4, event: "Triển lãm Công nghệ", result: "Chưa đạt", revenue: "90 triệu", summary: "Một số gian hàng thiếu vật tư, cần checklist rõ ràng hơn." }
 ];
 
 // SURVEYS
@@ -128,7 +147,13 @@ export const surveys = [
 // EQUIPMENT
 export const equipment = [
   { id: 1, eventId: 1, name: "Máy chiếu", status: "Sẵn sàng" },
-  { id: 2, eventId: 1, name: "Âm thanh", status: "Đang kiểm tra" }
+  { id: 2, eventId: 1, name: "Âm thanh", status: "Đang sử dụng" },
+  { id: 3, eventId: 1, name: "Đèn sân khấu", status: "Hỏng" },
+  { id: 4, eventId: 2, name: "Micro không dây", status: "Đang sử dụng" },
+  { id: 5, eventId: 2, name: "Màn hình LED", status: "Sẵn sàng" },
+  { id: 6, eventId: 3, name: "Bảng viết", status: "Sẵn sàng" },
+  { id: 7, eventId: 4, name: "Hệ thống âm thanh", status: "Đang sử dụng" },
+  { id: 8, eventId: 5, name: "Kiosk check-in", status: "Hỏng" }
 ];
 
 // NOTIFICATIONS
