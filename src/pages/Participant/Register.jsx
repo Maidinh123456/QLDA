@@ -1,50 +1,499 @@
 import React, { useState } from 'react';
 import MainLayout from '../../layouts/MainLayout';
-import { events, participants } from '../../mockData';
+import { events } from '../../mockData';
+
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const allowedStatus = ["Đang chuẩn bị", "Đang diễn ra", "Hoàn thành"];
+const visibleEvents  = events.filter(ev => allowedStatus.includes(ev.status));
+
+const STATUS_CFG = {
+  "Đang chuẩn bị": { c: "#7C3AED", bg: "#EDE9FE", b: "#C4B5FD", dot: "#7C3AED" },
+  "Đang diễn ra":  { c: "#059669", bg: "#D1FAE5", b: "#6EE7B7", dot: "#10B981" },
+  "Hoàn thành":    { c: "#2563EB", bg: "#DBEAFE", b: "#93C5FD", dot: "#3B82F6" },
+};
+
+const fmt = (n) => Number(n)?.toLocaleString('vi-VN') + ' ₫';
+
+const inputStyle = {
+  width: "100%", boxSizing: "border-box",
+  background: "#f8fafc", border: "1.5px solid #e2e8f0",
+  borderRadius: 12, padding: "12px 16px",
+  color: "#0f172a", fontSize: 14, outline: "none",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
+  transition: "all 0.2s",
+};
+
+const globalCss = `
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeInUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .ev-row { transition: all 0.15s; background: #fff; border-left: 3px solid transparent; }
+  .ev-row:hover { background: #f8faff !important; border-left-color: #6366f1 !important; }
+  .ev-row:hover .ev-arrow { color: #6366f1 !important; transform: translateX(3px); }
+  .ev-arrow { transition: all 0.18s; }
+  .btn-primary:hover { opacity:0.91; transform:translateY(-1px); }
+  .btn-primary { transition: all 0.18s; }
+  .seat-cell:hover { transform: scale(1.12) !important; }
+`;
+
+// ─── STEP INDICATOR ───────────────────────────────────────────────────────────
+const Steps = ({ current, isFree }) => {
+  const steps = isFree
+    ? ["Chọn sự kiện", "Thông tin"]
+    : ["Chọn sự kiện", "Chọn ghế", "Thông tin"];
+  const displayCurrent = isFree ? (current === 0 ? 0 : 1) : current;
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", marginBottom: 26, padding: "0 2px" }}>
+      {steps.map((s, i) => {
+        const done   = i < displayCurrent;
+        const active = i === displayCurrent;
+        return (
+          <React.Fragment key={i}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 700,
+                background: done || active ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "#f1f5f9",
+                color: done || active ? "#fff" : "#94a3b8",
+                boxShadow: active
+                  ? "0 0 0 5px rgba(99,102,241,0.15), 0 4px 12px rgba(99,102,241,0.4)"
+                  : done ? "0 2px 8px rgba(99,102,241,0.25)" : "none",
+                transition: "all 0.25s"
+              }}>
+                {done ? "✓" : i + 1}
+              </div>
+              <span style={{
+                fontSize: 11, fontWeight: active ? 700 : 500,
+                color: active ? "#6366f1" : done ? "#475569" : "#94a3b8",
+                whiteSpace: "nowrap"
+              }}>{s}</span>
+            </div>
+            {i < steps.length - 1 && (
+              <div style={{
+                flex: 1, height: 2, margin: "-18px 10px 0",
+                background: done ? "linear-gradient(90deg,#6366f1,#8b5cf6)" : "#e2e8f0",
+                borderRadius: 99, transition: "background 0.35s"
+              }} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+};
+
+// ─── SEAT MAP ─────────────────────────────────────────────────────────────────
+const SeatMap = ({ seats, selectedSeats, onToggle }) => {
+  if (!seats || seats.length === 0)
+    return <div style={{ textAlign: "center", padding: "30px 0", color: "#94a3b8", fontSize: 14 }}>Không có dữ liệu sơ đồ ghế</div>;
+
+  const rows = seats.reduce((acc, seat) => {
+    if (!acc[seat.row]) acc[seat.row] = [];
+    acc[seat.row].push(seat);
+    return acc;
+  }, {});
+
+  const countByStatus = (s) => seats.filter(x => x.status === s).length;
+  const isSelected    = (seat) => selectedSeats.some(s => s.id === seat.id);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 14, marginBottom: 22, flexWrap: "wrap", justifyContent: "center" }}>
+        {[
+          { bg: "#f1f5f9",                                   border: "#cbd5e1", label: `Đã đặt (${countByStatus("taken")})` },
+          { bg: "#fff",                                      border: "#a5b4fc", label: `Còn trống (${countByStatus("available")})` },
+          { bg: "#fefce8",                                   border: "#fde047", label: `VIP (${countByStatus("vip")})` },
+          { bg: "linear-gradient(135deg,#6366f1,#8b5cf6)",   border: "#4f46e5", label: `Đang chọn (${selectedSeats.length})` },
+        ].map((l, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 14, height: 14, borderRadius: 4, background: l.bg, border: `1.5px solid ${l.border}`, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>{l.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        width: "62%", minWidth: 190, textAlign: "center", marginBottom: 20, padding: "11px 0",
+        background: "linear-gradient(135deg,#c7d2fe,#ddd6fe,#c7d2fe)",
+        borderRadius: 12, fontSize: 12, fontWeight: 800,
+        color: "#4338ca", letterSpacing: "0.14em",
+        boxShadow: "0 4px 18px rgba(99,102,241,0.2)",
+        border: "1px solid #a5b4fc"
+      }}>🎤 SÂN KHẤU</div>
+
+      <div style={{ width: "42%", height: 14, marginBottom: 4, background: "linear-gradient(to bottom,rgba(99,102,241,0.07),transparent)", borderRadius: "50% 50% 0 0 / 100% 100% 0 0" }} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 7, alignItems: "center", width: "100%" }}>
+        {Object.entries(rows).map(([row, rowSeats]) => (
+          <div key={row} style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
+            <span style={{ width: 18, fontSize: 10, fontWeight: 700, color: "#cbd5e1", textAlign: "right", flexShrink: 0 }}>{row}</span>
+            <div style={{ display: "flex", gap: 5 }}>
+              {rowSeats.map(seat => {
+                const isTaken = seat.status === "taken";
+                const isVip   = seat.status === "vip";
+                const sel     = isSelected(seat);
+                let bg = "#fff", border = "#a5b4fc", color = "#4338ca", shadow = "0 1px 4px rgba(99,102,241,0.1)";
+                if (isTaken) { bg = "#f1f5f9"; border = "#e2e8f0"; color = "#cbd5e1"; shadow = "none"; }
+                if (isVip)   { bg = "#fefce8"; border = "#fde047"; color = "#92400e"; shadow = "0 1px 6px rgba(234,179,8,0.15)"; }
+                if (sel)     { bg = "linear-gradient(135deg,#6366f1,#8b5cf6)"; border = "#4f46e5"; color = "#fff"; shadow = "0 4px 14px rgba(99,102,241,0.45)"; }
+                return (
+                  <div
+                    key={seat.id}
+                    className={!isTaken ? "seat-cell" : ""}
+                    title={isTaken ? `${seat.id} – Đã đặt` : sel ? `${seat.id} – Đang chọn` : `${seat.id} – ${isVip ? "VIP · " : ""}Còn trống`}
+                    onClick={() => !isTaken && onToggle(seat)}
+                    style={{
+                      width: 34, height: 34, borderRadius: 8,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 11, fontWeight: 700,
+                      background: bg, border: `1.5px solid ${border}`, color,
+                      cursor: isTaken ? "not-allowed" : "pointer",
+                      transition: "all 0.13s",
+                      transform: sel ? "scale(1.16)" : "scale(1)",
+                      boxShadow: shadow, userSelect: "none", position: "relative",
+                    }}
+                  >
+                    {seat.number}
+                    {isVip && !sel && <span style={{ position: "absolute", top: -6, right: -6, fontSize: 9 }}>⭐</span>}
+                  </div>
+                );
+              })}
+            </div>
+            <span style={{ width: 18, fontSize: 10, fontWeight: 700, color: "#cbd5e1", flexShrink: 0 }}>{row}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 18, fontSize: 11, color: "#e2e8f0", letterSpacing: "0.12em", fontWeight: 600 }}>── LỐI ĐI ──</div>
+    </div>
+  );
+};
+
+// ─── SUCCESS SCREEN ───────────────────────────────────────────────────────────
+const SuccessScreen = ({ ev, form, selectedSeats, isFree, onReset }) => {
+  const totalPrice = selectedSeats.length * (ev?.price ?? 0);
+  return (
+    <div style={{ animation: "fadeInUp 0.4s ease", display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 28px", textAlign: "center" }}>
+      <div style={{ position: "relative", marginBottom: 24 }}>
+        <div style={{
+          width: 92, height: 92, borderRadius: "50%",
+          background: "linear-gradient(135deg,#bbf7d0,#4ade80)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 44, boxShadow: "0 12px 36px rgba(16,185,129,0.3)",
+          animation: "pop 0.5s ease 0.25s both"
+        }}>🎉</div>
+        <div style={{ position: "absolute", inset: -7, borderRadius: "50%", border: "2px dashed #a7f3d0", animation: "spin 14s linear infinite" }} />
+      </div>
+
+      <h2 style={{ fontSize: 26, fontWeight: 800, color: "#064e3b", margin: "0 0 10px", letterSpacing: "-0.02em" }}>Đăng ký thành công!</h2>
+      <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 30px", maxWidth: 340, lineHeight: 1.75 }}>
+        {isFree ? "Bạn đã đăng ký tham dự sự kiện miễn phí thành công. Hẹn gặp bạn tại sự kiện! 🙌" : "Bạn đã đặt vé thành công. Thông tin chi tiết được ghi nhận bên dưới."}
+      </p>
+
+      <div style={{
+        background: "#fff", border: "1.5px solid #6ee7b7",
+        borderRadius: 18, padding: "22px 26px", marginBottom: 28,
+        boxShadow: "0 8px 32px rgba(5,150,105,0.1)",
+        width: "100%", maxWidth: 420, textAlign: "left"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #f0fdf4" }}>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: "linear-gradient(135deg,#d1fae5,#6ee7b7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>🎫</div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", textTransform: "uppercase", letterSpacing: "0.08em" }}>Chi tiết đăng ký</span>
+        </div>
+        {[
+          { label: "Sự kiện",    value: ev.name },
+          { label: "Ngày",       value: ev.date },
+          { label: "Địa điểm",  value: ev.location },
+          { label: "Họ tên",     value: form.name },
+          { label: "Điện thoại", value: form.phone },
+          { label: "Email",      value: form.email },
+          { label: "Loại vé",    value: isFree ? "🎁 Miễn phí" : "💳 Có phí" },
+          ...(!isFree ? [
+            { label: "Ghế đã chọn", value: selectedSeats.map(s => s.id + (s.status === "vip" ? "⭐" : "")).join(", ") },
+            { label: "Tổng tiền",   value: fmt(totalPrice) },
+          ] : []),
+        ].map(({ label, value }) => (
+          <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "9px 0", borderBottom: "1px dashed #f0fdf4", gap: 16 }}>
+            <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600, flexShrink: 0 }}>{label}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, textAlign: "right", color: label === "Tổng tiền" ? "#7c3aed" : "#0f172a" }}>{value}</span>
+          </div>
+        ))}
+      </div>
+
+      <button onClick={onReset} className="btn-primary" style={{
+        padding: "13px 34px",
+        background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+        border: "none", borderRadius: 14,
+        color: "#fff", fontSize: 14, fontWeight: 700,
+        cursor: "pointer", fontFamily: "inherit",
+        boxShadow: "0 6px 20px rgba(99,102,241,0.35)"
+      }}>← Đăng ký sự kiện khác</button>
+    </div>
+  );
+};
+
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
 const RegisterEvent = () => {
-  const [eventId, setEventId] = useState('');
-  const [localParticipants, setLocalParticipants] = useState(participants);
-  const [flash, setFlash] = useState(false);
-  const selectedEv = events.find(ev => ev.id === parseInt(eventId));
-  const handleRegister = () => {
-    if (!eventId) return;
-    setLocalParticipants([...localParticipants, { id: localParticipants.length + 1, eventId: parseInt(eventId), name: 'New Participant', checkedIn: false }]);
-    setFlash(true); setEventId(''); setTimeout(() => setFlash(false), 2000);
+  const [step, setStep]                   = useState(0);
+  const [selectedEv, setSelectedEv]       = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [form, setForm]                   = useState({ name: '', phone: '', email: '' });
+  const [errors, setErrors]               = useState({});
+  const [done, setDone]                   = useState(false);
+
+  const isFree = selectedEv ? selectedEv.price === 0 : false;
+
+  const handleSelectEvent = (ev) => {
+    setSelectedEv(ev); setSelectedSeats([]);
+    setErrors({}); setDone(false);
+    setForm({ name: '', phone: '', email: '' });
+    setStep(ev.price === 0 ? 2 : 1);
   };
+
+  const handleToggleSeat = (seat) =>
+    setSelectedSeats(prev => prev.some(s => s.id === seat.id) ? prev.filter(s => s.id !== seat.id) : [...prev, seat]);
+
+  const handleNextToForm = () => { if (!selectedSeats.length) return; setForm({ name: '', phone: '', email: '' }); setErrors({}); setStep(2); };
+
+  const handleBack = () => {
+    if (step === 2) { if (isFree) { setStep(0); setSelectedEv(null); } else setStep(1); }
+    else if (step === 1) { setStep(0); setSelectedEv(null); setSelectedSeats([]); }
+  };
+
+  const handleReset = () => {
+    setStep(0); setSelectedEv(null); setSelectedSeats([]);
+    setDone(false); setForm({ name: '', phone: '', email: '' }); setErrors({});
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim())  e.name  = "Vui lòng nhập họ tên";
+    if (!form.phone.trim()) e.phone = "Vui lòng nhập số điện thoại";
+    else if (!/^\d{9,11}$/.test(form.phone.trim())) e.phone = "Số điện thoại không hợp lệ";
+    if (!form.email.trim()) e.email = "Vui lòng nhập email";
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Email không hợp lệ";
+    return e;
+  };
+
+  const handleSubmit = () => {
+    const e = validate();
+    if (Object.keys(e).length > 0) { setErrors(e); return; }
+    const existing    = JSON.parse(localStorage.getItem('pendingTickets') || '[]');
+    const seatsToBook = selectedSeats.length > 0 ? selectedSeats : [null];
+    const newTickets  = seatsToBook.map(seat => ({
+      id: Date.now() + Math.random(), eventId: selectedEv.id,
+      eventName: selectedEv.name, eventDate: selectedEv.date,
+      eventLocation: selectedEv.location, price: selectedEv.price,
+      seat: seat?.id ?? null, participantName: form.name.trim(),
+      phone: form.phone.trim(), email: form.email.trim(),
+      paid: false, createdAt: new Date().toISOString(),
+    }));
+    localStorage.setItem('pendingTickets', JSON.stringify([...existing, ...newTickets]));
+    setDone(true);
+  };
+
+  const availableCount = selectedEv?.seats?.filter(s => s.status === "available").length ?? 0;
+  const totalPrice     = selectedSeats.length * (selectedEv?.price ?? 0);
+
   return (
     <MainLayout role="participant">
-      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#111827" }}>
-        <div style={{ marginBottom: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg, #0891b2, #6366f1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", boxShadow: "0 4px 12px rgba(8,145,178,0.25)" }}>🎫</div>
-            <h1 style={{ fontSize: "26px", fontWeight: 700, color: "#111827", margin: 0 }}>Đăng ký sự kiện</h1>
+      <style>{globalCss}</style>
+      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#0f172a" }}>
+
+        {/* HEADER */}
+        <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            width: 46, height: 46,
+            background: "linear-gradient(135deg,#0891b2,#6366f1)",
+            borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 22, boxShadow: "0 6px 20px rgba(212, 156, 249, 0.32)"
+          }}>🎫</div>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: 0, letterSpacing: "-0.02em" }}>Đăng ký sự kiện</h1>
+            <p style={{ fontSize: 13, color: "#94a3b8", margin: 0, marginTop: 2 }}>Chọn sự kiện và hoàn tất đăng ký</p>
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: "24px", alignItems: "start" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "28px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: "16px" }}>Chọn sự kiện</div>
-            <select value={eventId} onChange={(e) => setEventId(e.target.value)} style={{ width: "100%", boxSizing: "border-box", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: "10px", padding: "11px 13px", color: "#111827", fontSize: "14px", outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif", marginBottom: "14px" }}>
-              <option value="">Chọn sự kiện...</option>
-              {events.map(ev => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
-            </select>
-            {selectedEv && <div style={{ background: "#ecfeff", border: "1px solid #a5f3fc", borderRadius: "10px", padding: "13px", marginBottom: "14px" }}><div style={{ fontSize: "14px", fontWeight: 600, color: "#0e7490", marginBottom: "5px" }}>{selectedEv.name}</div><div style={{ fontSize: "12px", color: "#6b7280" }}>📅 {selectedEv.date}</div><div style={{ fontSize: "12px", color: "#6b7280", marginTop: "2px" }}>📍 {selectedEv.location}</div></div>}
-            {flash && <div style={{ background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: "10px", padding: "10px 13px", marginBottom: "12px", color: "#059669", fontSize: "13px" }}>✓ Đăng ký thành công!</div>}
-            <button onClick={handleRegister} disabled={!eventId} style={{ width: "100%", background: eventId ? "linear-gradient(135deg, #0891b2, #6366f1)" : "#e5e7eb", border: "none", borderRadius: "10px", padding: "12px", color: eventId ? "#fff" : "#9ca3af", fontSize: "14px", fontWeight: 600, cursor: eventId ? "pointer" : "not-allowed", fontFamily: "'Plus Jakarta Sans', sans-serif", boxShadow: eventId ? "0 4px 12px rgba(8,145,178,0.25)" : "none" }}>🎫 Đăng ký tham gia</button>
+
+        {!done && <Steps current={step} isFree={isFree} />}
+
+        {/* DONE */}
+        {done && selectedEv && (
+          <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e2e8f0", boxShadow: "0 4px 28px rgba(0,0,0,0.07)" }}>
+            <SuccessScreen ev={selectedEv} form={form} selectedSeats={selectedSeats} isFree={isFree} onReset={handleReset} />
           </div>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ padding: "16px 22px", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}><span style={{ fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px" }}>Sự kiện có thể tham gia</span></div>
-            {events.map((ev, i) => (
-              <div key={ev.id} onClick={() => setEventId(String(ev.id))} style={{ padding: "15px 22px", borderBottom: i < events.length - 1 ? "1px solid #f9fafb" : "none", cursor: "pointer", background: eventId === String(ev.id) ? "#ecfeff" : "transparent", borderLeft: eventId === String(ev.id) ? "3px solid #0891b2" : "3px solid transparent", transition: "all 0.15s" }}
-                onMouseEnter={(e) => e.currentTarget.style.background = "#f9fafb"}
-                onMouseLeave={(e) => e.currentTarget.style.background = eventId === String(ev.id) ? "#ecfeff" : "transparent"}>
-                <div style={{ fontWeight: 500, color: "#111827", marginBottom: "3px", fontSize: "14px" }}>{ev.name}</div>
-                <div style={{ fontSize: "12px", color: "#9ca3af" }}>📅 {ev.date} &nbsp; 📍 {ev.location}</div>
+        )}
+
+        {/* STEP 0: EVENT LIST */}
+        {!done && step === 0 && (
+          <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, overflow: "hidden", boxShadow: "0 2px 20px rgba(0,0,0,0.06)" }}>
+            <div style={{ padding: "14px 20px", background: "linear-gradient(to right,#f8faff,#f0f4ff)", borderBottom: "1px solid #e8ecf8" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.07em" }}>Chọn sự kiện để đăng ký</span>
+            </div>
+            {visibleEvents.map((ev, i) => {
+              const sc       = STATUS_CFG[ev.status] || STATUS_CFG["Đang chuẩn bị"];
+              const avail    = ev.seats?.filter(s => s.status === "available").length ?? 0;
+              const isFull   = ev.price > 0 && avail === 0;
+              const isFreeEv = ev.price === 0;
+              return (
+                <div key={ev.id} className="ev-row"
+                  onClick={() => !isFull && handleSelectEvent(ev)}
+                  style={{ padding: "16px 20px", borderBottom: i < visibleEvents.length - 1 ? "1px solid #f8fafc" : "none", cursor: isFull ? "not-allowed" : "pointer", opacity: isFull ? 0.45 : 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "#0f172a", marginBottom: 5 }}>{ev.name}</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", display: "flex", gap: 12, flexWrap: "wrap" }}>
+                      <span>📅 {ev.date}</span>
+                      <span>📍 {ev.location}</span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 20, color: isFreeEv ? "#059669" : "#7c3aed", background: isFreeEv ? "#f0fdf4" : "#faf5ff", border: `1px solid ${isFreeEv ? "#bbf7d0" : "#e9d5ff"}` }}>
+                      {isFreeEv ? "🎁 Miễn phí" : `💳 ${fmt(ev.price)}`}
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 11px", borderRadius: 20, color: sc.c, background: sc.bg, border: `1px solid ${sc.b}`, display: "flex", alignItems: "center", gap: 5 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: sc.dot, display: "inline-block", flexShrink: 0 }} />{ev.status}
+                    </span>
+                    {!isFreeEv && (
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 11px", borderRadius: 20, color: isFull ? "#dc2626" : "#059669", background: isFull ? "#fef2f2" : "#f0fdf4", border: `1px solid ${isFull ? "#fecaca" : "#bbf7d0"}` }}>
+                        {isFull ? "Hết chỗ" : `${avail} chỗ trống`}
+                      </span>
+                    )}
+                    {!isFull && <span className="ev-arrow" style={{ color: "#c7d2fe", fontSize: 22, lineHeight: 1 }}>›</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* STEP 1: SEAT MAP */}
+        {!done && step === 1 && selectedEv && !isFree && (
+          <div style={{ animation: "fadeUp 0.22s ease" }}>
+            <div style={{ background: "linear-gradient(135deg,#eff6ff,#e0e7ff)", border: "1px solid #bfdbfe", borderRadius: 14, padding: "14px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#1d4ed8", marginBottom: 3 }}>{selectedEv.name}</div>
+                <div style={{ fontSize: 12, color: "#64748b" }}>📅 {selectedEv.date} · 📍 {selectedEv.location}</div>
               </div>
-            ))}
+              <div style={{ display: "flex", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, borderRadius: 10, padding: "5px 13px", color: "#7c3aed", background: "#faf5ff", border: "1px solid #e9d5ff" }}>💳 {fmt(selectedEv.price)}/ghế</span>
+                <span style={{ fontSize: 12, fontWeight: 700, borderRadius: 10, padding: "5px 13px", color: "#059669", background: "#f0fdf4", border: "1px solid #bbf7d0" }}>{availableCount} chỗ trống</span>
+              </div>
+            </div>
+
+            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, padding: "26px 22px", marginBottom: 14, boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 22, textAlign: "center" }}>Sơ đồ chỗ ngồi — nhấn để chọn</div>
+              <SeatMap seats={selectedEv.seats} selectedSeats={selectedSeats} onToggle={handleToggleSeat} />
+            </div>
+
+            {selectedSeats.length > 0 && (
+              <div style={{ background: "linear-gradient(135deg,#faf5ff,#ede9fe)", border: "1px solid #c4b5fd", borderRadius: 12, padding: "12px 18px", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#6d28d9" }}>✓ {selectedSeats.length} ghế:&nbsp;</span>
+                  <span style={{ fontSize: 13, color: "#7c3aed" }}>{selectedSeats.map(s => s.id + (s.status === "vip" ? "⭐" : "")).join(", ")}</span>
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#6d28d9" }}>Tổng: {fmt(totalPrice)}</div>
+              </div>
+            )}
+
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+              <button onClick={handleBack} style={{ padding: "11px 20px", background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 12, color: "#64748b", fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>← Quay lại</button>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {selectedSeats.length === 0 && <span style={{ fontSize: 12, color: "#94a3b8" }}>Chưa chọn ghế</span>}
+                <button onClick={handleNextToForm} disabled={selectedSeats.length === 0} className="btn-primary" style={{
+                  padding: "11px 26px",
+                  background: selectedSeats.length > 0 ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "#e2e8f0",
+                  border: "none", borderRadius: 12,
+                  color: selectedSeats.length > 0 ? "#fff" : "#94a3b8",
+                  fontWeight: 700, fontSize: 14, fontFamily: "inherit",
+                  cursor: selectedSeats.length > 0 ? "pointer" : "not-allowed",
+                  boxShadow: selectedSeats.length > 0 ? "0 5px 16px rgba(99,102,241,0.32)" : "none"
+                }}>
+                  {selectedSeats.length > 0 ? `Tiếp theo (${selectedSeats.length} ghế) →` : "Tiếp theo →"}
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* STEP 2: FORM */}
+        {!done && step === 2 && selectedEv && (
+          <div style={{ animation: "fadeUp 0.22s ease", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            {/* Summary */}
+            <div style={{
+              width: "100%", maxWidth: 560,
+              background: "linear-gradient(135deg,#f8faff,#f0f4ff)",
+              border: "1px solid #e0e7ff", borderRadius: 14, padding: "18px 22px", marginBottom: 18,
+              display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12
+            }}>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Sự kiện đã chọn</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#1e293b" }}>{selectedEv.name}</div>
+                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 3 }}>📅 {selectedEv.date} · 📍 {selectedEv.location}</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                {isFree ? (
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#059669", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 10, padding: "6px 16px" }}>🎁 Miễn phí</div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", gap: 5, flexWrap: "wrap", justifyContent: "flex-end", marginBottom: 6 }}>
+                      {selectedSeats.map(s => (
+                        <span key={s.id} style={{ fontSize: 11, fontWeight: 700, color: "#6366f1", background: "#ede9fe", border: "1px solid #c4b5fd", borderRadius: 7, padding: "3px 9px" }}>
+                          {s.id}{s.status === "vip" ? "⭐" : ""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: "#7c3aed" }}>Tổng: {fmt(totalPrice)}</div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{fmt(selectedEv.price)} × {selectedSeats.length} ghế</div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Form */}
+            <div style={{ width: "100%", maxWidth: 560, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "28px 30px", boxShadow: "0 4px 28px rgba(0,0,0,0.07)" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 22 }}>
+                Thông tin người đại diện
+              </div>
+              {[
+                { key: "name",  label: "Họ và tên",     placeholder: "Nguyễn Văn A"      },
+                { key: "phone", label: "Số điện thoại", placeholder: "0901234567"         },
+                { key: "email", label: "Email",          placeholder: "example@gmail.com"  },
+              ].map(({ key, label, placeholder }) => (
+                <div key={key} style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
+                    {label} <span style={{ color: "#f43f5e" }}>*</span>
+                  </label>
+                  <input
+                    value={form[key]}
+                    placeholder={placeholder}
+                    onChange={e => { setForm(f => ({ ...f, [key]: e.target.value })); if (errors[key]) setErrors(er => ({ ...er, [key]: undefined })); }}
+                    style={{ ...inputStyle, borderColor: errors[key] ? "#fca5a5" : "#e2e8f0" }}
+                    onFocus={e  => { e.target.style.borderColor = "#6366f1"; e.target.style.boxShadow = "0 0 0 4px rgba(99,102,241,0.1)"; e.target.style.background = "#fff"; }}
+                    onBlur={e   => { e.target.style.borderColor = errors[key] ? "#fca5a5" : "#e2e8f0"; e.target.style.boxShadow = "none"; e.target.style.background = "#f8fafc"; }}
+                  />
+                  {errors[key] && <div style={{ fontSize: 12, color: "#ef4444", marginTop: 5 }}>⚠ {errors[key]}</div>}
+                </div>
+              ))}
+
+              <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                <button onClick={handleBack} style={{ flex: 1, padding: 13, background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 12, color: "#64748b", fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>← Quay lại</button>
+                <button onClick={handleSubmit} className="btn-primary" style={{
+                  flex: 2, padding: 13,
+                  background: isFree ? "linear-gradient(135deg,#059669,#047857)" : "linear-gradient(135deg,#6366f1,#8b5cf6)",
+                  border: "none", borderRadius: 12, color: "#fff", fontSize: 14, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit",
+                  boxShadow: isFree ? "0 5px 16px rgba(5,150,105,0.28)" : "0 5px 16px rgba(99,102,241,0.32)"
+                }}>✅ Xác nhận đăng ký</button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </MainLayout>
   );
 };
+
 export default RegisterEvent;

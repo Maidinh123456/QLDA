@@ -6,11 +6,10 @@ const BG = "#ffffff";
 const BORDER = "#ebebf2";
 const TEXT = "#1a1a2e";
 const TEXT_MUTED = "#8888a8";
-const HOVER_BG = "#f5f5fb";
 const FONT = "'Plus Jakarta Sans', sans-serif";
 
 const menuIcons = {
-  Dashboard: "⊞",
+  "Trang chủ": "🏠",
   "Phê duyệt kế hoạch": "📋",
   "Xem báo cáo": "📈",
   "Tạo sự kiện": "✦",
@@ -24,7 +23,7 @@ const menuIcons = {
   "Danh sách tham gia": "👥",
   "Sự kiện": "🗓",
   "Tìm sự kiện": "🔍",
-  "Xem sự kiện": "📋",
+  "Lịch sử đăng ký": "📋",
   "Đăng ký sự kiện": "🎫",
   "Thanh toán": "💳",
   "Hủy vé": "🚫",
@@ -35,12 +34,12 @@ const menuIcons = {
 
 const menus = {
   director: [
-    { path: "/director/dashboard", label: "Dashboard" },
+    { path: "/director/dashboard", label: "Trang chủ" },
     { path: "/director/approve-plan", label: "Phê duyệt kế hoạch" },
     { path: "/director/view-report", label: "Xem báo cáo" },
   ],
   manager: [
-    { path: "/manager/dashboard", label: "Dashboard" },
+    { path: "/manager/dashboard", label: "Trang chủ" },
     { path: "/manager/create-event", label: "Tạo sự kiện" },
     { path: "/manager/assign-task", label: "Phân công" },
     { path: "/manager/approve-script", label: "Duyệt kịch bản" },
@@ -48,7 +47,7 @@ const menus = {
     { path: "/manager/view-report", label: "Báo cáo" },
   ],
   staff: [
-    { path: "/staff/dashboard", label: "Dashboard" },
+    { path: "/staff/dashboard", label: "Trang chủ" },
     { path: "/staff/attendance", label: "Điểm danh" },
     { path: "/staff/create-script", label: "Tạo kịch bản" },
     { path: "/staff/equipment", label: "Thiết bị" },
@@ -57,9 +56,9 @@ const menus = {
     { path: "/staff/view-event", label: "Sự kiện" },
   ],
   participant: [
-    { path: "/participant/dashboard", label: "Dashboard" },
+    { path: "/participant/dashboard", label: "Trang chủ" },
     { path: "/participant/search-event", label: "Tìm sự kiện" },
-    { path: "/participant/view-event", label: "Xem sự kiện" },
+    { path: "/participant/view-history", label: "Lịch sử đăng ký" },
     { path: "/participant/register", label: "Đăng ký sự kiện" },
     { path: "/participant/payment", label: "Thanh toán" },
     { path: "/participant/cancel-ticket", label: "Hủy vé" },
@@ -67,10 +66,12 @@ const menus = {
     { path: "/participant/survey", label: "Khảo sát" },
   ],
   marketing: [
-    { path: "/marketing/dashboard", label: "Dashboard" },
+    { path: "/marketing/dashboard", label: "Trang chủ" },
     { path: "/marketing/content", label: "Nội dung" },
   ],
-  customer: [{ path: "/customer/dashboard", label: "Dashboard" }],
+  customer: [
+    { path: "/customer/dashboard", label: "Trang chủ" }
+  ],
 };
 
 const Sidebar = ({ role }) => {
@@ -179,7 +180,7 @@ const Sidebar = ({ role }) => {
       </nav>
 
       {/* Logout */}
-      <div style={{ padding: "12px" }}>
+      <div style={{ padding: "16px" }}>
         <button
           onClick={() => {
             localStorage.removeItem("currentUser");
@@ -187,16 +188,24 @@ const Sidebar = ({ role }) => {
           }}
           style={{
             width: "100%",
-            padding: "10px",
-            borderRadius: "10px",
-            border: "none",
-            background: "#fff1f2",
-            color: "#e11d48",
+            padding: "11px",
+            borderRadius: "12px",
+            border: "1px solid #fecaca",
+            background: "linear-gradient(135deg,#ef4444,#dc2626)",
+            color: "#ffffff",
             cursor: "pointer",
-            fontWeight: "500",
+            fontWeight: 600,
+            fontSize: "14px",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.9";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
           }}
         >
-          Đăng xuất
+          ↩ Đăng xuất
         </button>
       </div>
     </div>

@@ -30,7 +30,7 @@ import ParticipantDashboard from './pages/Participant/Dashboard';
 import ParticipantPayment from './pages/Participant/Payment';
 import ParticipantRegister from './pages/Participant/Register';
 import ParticipantSearchEvent from './pages/Participant/SearchEvent';
-import ParticipantViewEvent from './pages/Participant/ViewEvent';
+import ParticipantViewHistory from './pages/Participant/ViewHistory';
 import ParticipantCancelTicket from './pages/Participant/CancelTicket';
 import ParticipantTransferTicket from './pages/Participant/TransferTicket';
 import ParticipantSurvey from './pages/Participant/Survey';
@@ -80,10 +80,11 @@ const App = () => {
         <Route path="/participant/payment" element={<ParticipantPayment />} />
         <Route path="/participant/register" element={<ParticipantRegister />} />
         <Route path="/participant/search-event" element={<ParticipantSearchEvent />} />
-        <Route path="/participant/view-event" element={<ParticipantViewEvent />} />
         <Route path="/participant/cancel-ticket" element={<ParticipantCancelTicket />} />
         <Route path="/participant/transfer-ticket" element={<ParticipantTransferTicket />} />
         <Route path="/participant/survey" element={<ParticipantSurvey />} />
+        <Route path="/participant/view-history" element={<ParticipantViewHistory />} />
+
 
         {/* Staff */}
         <Route path="/staff/attendance" element={<StaffAttendance />} />
