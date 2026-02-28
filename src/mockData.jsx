@@ -1,11 +1,11 @@
 // USERS
 export const users = [
-  { id: 1, name: "Hieu", role: "director", password: "123" },
-  { id: 2, name: "Thang", role: "manager", password: "123" },
-  { id: 3, name: "Trieu", role: "staff", password: "123" },
-  { id: 4, name: "Dinh", role: "participant", password: "123" },
-  { id: 5, name: "Phat", role: "marketing", password: "123" },
-  { id: 6, name: "KhachHang", role: "customer", password: "123" }
+  { id: 1, username: "Hieu", role: "director", password: "123" },
+  { id: 2, username: "Thang", role: "manager", password: "123" },
+  { id: 3, username: "Trieu", role: "staff", password: "123" },
+  { id: 4, username: "Dinh", role: "participant", password: "123" },
+  { id: 5, username: "Phat", role: "marketing", password: "123" },
+  { id: 6, username: "KhachHang", role: "customer", password: "123" }
 ];
 
 // EVENTS

@@ -1,31 +1,70 @@
 import React, { useState } from "react";
-import { users } from "../../mockData";
+import { users as mockUsers } from "../../mockData";
 import { useNavigate } from "react-router-dom";
-
-// Add to index.html:
-// <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState(""); // đổi từ name -> username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    setTimeout(() => {
-      const user = users.find(
-        (u) => u.name.toLowerCase() === name.trim().toLowerCase() && u.password === password
-      );
-      if (!user) { setError("Sai tên đăng nhập hoặc mật khẩu!"); setLoading(false); return; }
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      const routes = { director: "/director/dashboard", manager: "/manager/dashboard", staff: "/staff/dashboard", participant: "/participant/dashboard", marketing: "/marketing/dashboard", customer: "/customer/dashboard" };
-      navigate(routes[user.role] || "/");
-    }, 600);
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  setTimeout(() => {
+    const localUsers =
+      JSON.parse(localStorage.getItem("users")) || [];
+
+    // Chuẩn hoá mockUsers thành có username
+    const normalizedMockUsers = mockUsers.map((u) => ({
+      ...u,
+      username: u.username || u.name, // nếu không có username thì lấy name
+    }));
+
+    // Gộp + loại trùng (ưu tiên local)
+    const mergedUsers = [
+      ...normalizedMockUsers.filter(
+        (mockUser) =>
+          !localUsers.some(
+            (localUser) =>
+              localUser.username?.toLowerCase() ===
+              mockUser.username?.toLowerCase()
+          )
+      ),
+      ...localUsers,
+    ];
+
+    const user = mergedUsers.find(
+      (u) =>
+        u.username?.toLowerCase() ===
+          username.trim().toLowerCase() &&
+        u.password === password
+    );
+
+    if (!user) {
+      setError("Sai tên đăng nhập hoặc mật khẩu!");
+      setLoading(false);
+      return;
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    const routes = {
+      director: "/director/dashboard",
+      manager: "/manager/dashboard",
+      staff: "/staff/dashboard",
+      participant: "/participant/dashboard",
+      marketing: "/marketing/dashboard",
+      customer: "/customer/dashboard",
+    };
+
+    navigate(routes[user.role] || "/");
+  }, 600);
+};
 
   return (
     <div style={{
@@ -35,7 +74,6 @@ const Login = () => {
       fontFamily: "'Plus Jakarta Sans', sans-serif", padding: "20px",
       position: "relative", overflow: "hidden",
     }}>
-      {/* Decorative blobs */}
       <div style={{ position: "fixed", top: "-10%", right: "-5%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
       <div style={{ position: "fixed", bottom: "-10%", left: "-5%", width: "350px", height: "350px", background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
 
@@ -47,7 +85,6 @@ const Login = () => {
         border: "1px solid rgba(99,102,241,0.1)",
         position: "relative",
       }}>
-        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
           <div style={{
             width: "56px", height: "56px",
@@ -64,15 +101,13 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           {[
-            { label: "TÊN ĐĂNG NHẬP", placeholder: "Nhập tên đăng nhập", value: name, setter: setName, type: "text" },
+            { label: "TÊN ĐĂNG NHẬP", placeholder: "Nhập tên đăng nhập", value: username, setter: setUsername, type: "text" },
             { label: "MẬT KHẨU", placeholder: "Nhập mật khẩu", value: password, setter: setPassword, type: "password" },
           ].map(({ label, placeholder, value, setter, type }) => (
             <div key={label} style={{ marginBottom: "18px" }}>
               <label style={{ display: "block", color: "#6b7280", fontSize: "11px", fontWeight: 600, marginBottom: "8px", letterSpacing: "0.6px" }}>{label}</label>
               <input type={type} value={value} placeholder={placeholder} onChange={(e) => setter(e.target.value)}
                 style={{ width: "100%", boxSizing: "border-box", background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: "12px", padding: "13px 15px", color: "#111827", fontSize: "14px", outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif", transition: "border-color 0.2s, box-shadow 0.2s" }}
-                onFocus={(e) => { e.target.style.borderColor = "#6366f1"; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.12)"; e.target.style.background = "#fff"; }}
-                onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; e.target.style.background = "#f9fafb"; }}
               />
             </div>
           ))}
@@ -90,17 +125,16 @@ const Login = () => {
             cursor: loading ? "not-allowed" : "pointer",
             boxShadow: loading ? "none" : "0 4px 14px rgba(99,102,241,0.4)",
             fontFamily: "'Plus Jakarta Sans', sans-serif", transition: "opacity 0.2s",
-          }}
-            onMouseEnter={(e) => !loading && (e.target.style.opacity = "0.92")}
-            onMouseLeave={(e) => (e.target.style.opacity = "1")}
-          >
+          }}>
             {loading ? "Đang đăng nhập..." : "Đăng nhập →"}
           </button>
         </form>
 
-        <p style={{ textAlign: "center", marginTop: "24px", color: "#9ca3af", fontSize: "13px", marginBottom: 0 }}>
+        <p className="text-center mt-4 text-sm text-gray-600">
           Chưa có tài khoản?{" "}
-          <a href="/register" style={{ color: "#6366f1", textDecoration: "none", fontWeight: 600 }}>Đăng ký ngay</a>
+          <Link to="/Auth/register" className="text-indigo-600 font-semibold hover:underline">
+            Đăng ký ngay
+          </Link>
         </p>
       </div>
     </div>
