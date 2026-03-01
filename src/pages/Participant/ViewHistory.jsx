@@ -32,7 +32,7 @@ const G = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   .vh {
-    padding: 40px 48px;
+    padding: 2px 2px;
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: #0f172a;
@@ -42,6 +42,8 @@ const G = `
   .vh-header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 24px;
+     font-family: 'Outfit', sans-serif; transition: all .15s; align-self: flex-start;
+
   }
   .vh-header-left { display: flex; align-items: center; gap: 14px; }
   .vh-icon {
@@ -107,24 +109,41 @@ const G = `
     background: #fff; border-radius: 20px; border: 1px solid #e2e8f0; 
     box-shadow: 0 4px 28px rgba(0,0,0,0.07); overflow: hidden; 
   }
+
+  /* ── HERO FIX: padding đều, thoáng, có orb trang trí ── */
   .vh-card-top { 
-    padding: 26px 26px 22px; 
-    background: linear-gradient(135deg,#ede9fe,#e0e7ff,#ede9fe); 
-    border-bottom: 1px solid #c4b5fd; 
+    padding: 32px 28px 28px;
+    background: linear-gradient(135deg, #f0f0ff 0%, #e8eeff 45%, #f5f0ff 100%);
+    border-bottom: 1px solid #e0e7ff;
+    position: relative; overflow: hidden;
   }
+  .vh-card-top-orb {
+    position: absolute; top: -50px; right: -40px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(129,140,248,.2) 0%, rgba(192,132,252,.1) 50%, transparent 70%);
+    pointer-events: none;
+  }
+  .vh-card-top-inner { position: relative; }
   .vh-card-eyebrow { 
     font-size: 11px; font-weight: 700; text-transform: uppercase; 
-    letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 8px; 
+    letter-spacing: 0.09em; color: #a094c0; margin-bottom: 10px; 
   }
   .vh-card-title { 
-    font-size: 21px; font-weight: 800; color: #0f172a; 
-    letter-spacing: -0.01em; line-height: 1.3; 
+    font-size: 22px; font-weight: 900; color: #0f172a; 
+    letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 14px;
   }
-  .vh-card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .vh-card-chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .vh-chip { 
     display: inline-flex; align-items: center; gap: 5px; 
-    font-size: 11.5px; font-weight: 700; padding: 5px 14px; 
-    border-radius: 12px; border: 1px solid; 
+    font-size: 12px; font-weight: 700; padding: 5px 14px; 
+    border-radius: 99px; border: 1px solid; white-space: nowrap;
+  }
+  /* chip ngày/địa điểm: xám nhạt hòa tông */
+  .vh-chip-meta {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; padding: 5px 14px;
+    border-radius: 99px; border: 1px solid #ddd6fe;
+    background: rgba(255,255,255,.75); color: #6d5fa0; white-space: nowrap;
   }
 
   .vh-status-card { 
@@ -215,15 +234,21 @@ export default function ViewHistory() {
               <button className="vh-back-btn" onClick={handleBack}>← Quay lại danh sách</button>
 
               <div className="vh-info-card">
+                {/* ── HERO đã fix: padding thoáng, chip đồng màu, orb trang trí ── */}
                 <div className="vh-card-top">
-                  <div className="vh-card-eyebrow">Chi tiết đăng ký</div>
-                  <div className="vh-card-title">{selected.ev.name}</div>
-                  <div className="vh-card-chips">
-                    <span className="vh-chip" style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}>
-                      {selected.ev.status}
-                    </span>
-                    <span className="vh-chip" style={{ color:"#059669", background:"#f0fdf4", borderColor:"#bbf7d0" }}>📅 {selected.ev.date}</span>
-                    <span className="vh-chip" style={{ color:"#374151", background:"#f9fafb", borderColor:"#e5e7eb" }}>📍 {selected.ev.location}</span>
+                  <div className="vh-card-top-orb" />
+                  <div className="vh-card-top-inner">
+                    <div className="vh-card-eyebrow">Chi tiết đăng ký</div>
+                    <div className="vh-card-title">{selected.ev.name}</div>
+                    <div className="vh-card-chips">
+                      {/* badge trạng thái */}
+                      <span className="vh-chip" style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}>
+                        {selected.ev.status}
+                      </span>
+                      {/* chip ngày — màu trung tính hòa tông tím nhạt */}
+                      <span className="vh-chip-meta">📅 {selected.ev.date}</span>
+                      <span className="vh-chip-meta">📍 {selected.ev.location}</span>
+                    </div>
                   </div>
                 </div>
 

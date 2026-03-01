@@ -126,7 +126,7 @@ const G = `
 
 const STATUS = {
   can:    { color:"#059669", bg:"#ecfdf5", border:"#a7f3d0", dot:"#10b981", label:"Có thể hủy" },
-  cannot: { color:"#de3b3b", bg:"#ffd4d4", border:"#ffac9d", dot:"#de3b3b", label:"Không thể hủy" },
+  cannot: { color:"#6e6e6e", bg:"#f7f6f6", border:"#dad6d5", dot:"#706d6d", label:"Không thể hủy" },
 };
 const CAN_CANCEL_STATUSES = ["Đang chuẩn bị", "Chờ phê duyệt"];
 

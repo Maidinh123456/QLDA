@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import MainLayout from "./layouts/MainLayout";
 // Auth
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
@@ -14,13 +14,12 @@ import DirectorDashboard from './pages/Director/Dashboard';
 import DirectorViewReport from './pages/Director/ViewReport';
 
 // Manager
-import ManagerApproveScript from './pages/Manager/ApproveScript';
-import ManagerAssignTask from './pages/Manager/AssignTask';
-import ManagerCreateEvent from './pages/Manager/CreateEvent';
-import ManagerDashboard from './pages/Manager/Dashboard';
-import ManagerProgress from './pages/Manager/Progress';
-import ManagerViewReport from './pages/Manager/ViewReport';
-
+import ManagerDashboard from "./pages/Manager/Dashboard";
+import ManagerCreateEvent from "./pages/Manager/CreateEvent";
+import ManagerAssignTask from "./pages/Manager/AssignTask";
+import ManagerApproveScript from "./pages/Manager/ApproveScript";
+import ManagerProgress from "./pages/Manager/Progress";
+import ManagerViewReport from "./pages/Manager/ViewReport";
 // Marketing
 import MarketingContent from './pages/Marketing/Content';
 import MarketingDashboard from './pages/Marketing/Dashboard';
@@ -64,10 +63,10 @@ const App = () => {
         <Route path="/director/view-report" element={<DirectorViewReport />} />
 
         {/* Manager */}
-        <Route path="/manager/approve-script" element={<ManagerApproveScript />} />
-        <Route path="/manager/assign-task" element={<ManagerAssignTask />} />
-        <Route path="/manager/create-event" element={<ManagerCreateEvent />} />
         <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+        <Route path="/manager/create-event" element={<ManagerCreateEvent />} />
+        <Route path="/manager/assign-task" element={<ManagerAssignTask />} />
+        <Route path="/manager/approve-script" element={<ManagerApproveScript />} />
         <Route path="/manager/progress" element={<ManagerProgress />} />
         <Route path="/manager/view-report" element={<ManagerViewReport />} />
 
