@@ -188,6 +188,8 @@ export const tickets = [
 // MARKETING CONTENT
 export const marketingContent = [
   { id: 1, eventId: 2, title: "Poster Gala Sinh viên", status: "Đã đăng" },
+  { id: 2, eventId: 3, title: "Làm giàu từ hai bàn tay trắng", status: "Đã đăng" },
+  { id: 3, eventId: 1, title: "Cậu bé 12 tuổi tham gia sự kiện", status: "Đã đăng" },
 ];
 
 // REPORTS
