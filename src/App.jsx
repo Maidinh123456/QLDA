@@ -7,6 +7,8 @@ import Register from "./pages/Auth/Register";
 
 // Customer
 import CustomerDashboard from './pages/Customer/Dashboard';
+import EventDetail from './pages/Customer/EventDetail';
+
 
 // Director
 import DirectorApprovePlan from './pages/Director/ApprovePlan';
@@ -44,6 +46,12 @@ import StaffParticipantList from './pages/Staff/ParticipantList';
 import StaffReport from './pages/Staff/Report';
 import StaffViewEvent from './pages/Staff/ViewEvent';
 
+//Khachhang
+import CustomerViewEvent from "./pages/Customer/CustomerViewEvent";
+import CustomerParticipantList from "./pages/Customer/CustomerParticipantList";
+import CustomerProgress from "./pages/Customer/CustomerProgress";
+import CustomerReport from "./pages/customer/CustomerReport";
+
 const App = () => {
   return (
     <Router>
@@ -57,6 +65,8 @@ const App = () => {
 
         {/* Customer */}
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+
+        <Route path="/customer/event/:id" element={<EventDetail />} />
 
         {/* Director */}
         <Route path="/director/approve-plan" element={<DirectorApprovePlan />} />
@@ -93,6 +103,12 @@ const App = () => {
         <Route path="/staff/participant-list" element={<StaffParticipantList />} />
         <Route path="/staff/report" element={<StaffReport />} />
         <Route path="/staff/view-event" element={<StaffViewEvent />} />
+
+        {/* Customer */}
+        <Route path="/customer/view-event" element={<CustomerViewEvent />} />
+        <Route path="/customer/participant-list" element={<CustomerParticipantList />} />
+        <Route path="/customer/progress" element={<CustomerProgress />} />
+        <Route path="/customer/report" element={<CustomerReport />} />
 
         {/* Not found */}
         <Route path="*" element={<Login />} />

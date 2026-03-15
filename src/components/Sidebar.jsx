@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export const SIDEBAR_WIDTH = "256px";
 
+
 const BG = "#ffffff";
 const BORDER = "#ebebf2";
 const TEXT = "#1a1a2e";
@@ -70,7 +71,13 @@ const menus = {
     { path: "/marketing/dashboard", label: "Dashboard" },
     { path: "/marketing/content", label: "Nội dung" },
   ],
-  customer: [{ path: "/customer/dashboard", label: "Dashboard" }],
+  customer: [
+  { path: "/customer/dashboard", label: "Dashboard" },
+  { path: "/customer/view-event", label: "Xem sự kiện" },
+  { path: "/customer/participant-list", label: "Danh sách tham gia" },
+  { path: "/customer/progress", label: "Tiến độ" },
+  { path: "/customer/report", label: "Báo cáo" },
+],
 };
 
 const Sidebar = ({ role }) => {

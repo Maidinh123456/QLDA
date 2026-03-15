@@ -117,7 +117,26 @@ export const marketingContent = [
 
 // REPORTS (đổi sang eventId)
 export const reports = [
-  { id: 1, eventId: 2, result: "Thành công", revenue: "200 triệu" }
+  {
+    id: 1,
+    eventId: 2,
+    result: "Thành công",
+    revenue: 200000000,
+    totalParticipants: 300,
+    checkedIn: 250,
+    rating: 4.5,
+    feedback: "Sự kiện được tổ chức chuyên nghiệp, khách tham dự đông."
+  },
+  {
+    id: 2,
+    eventId: 1,
+    result: "Khá tốt",
+    revenue: 120000000,
+    totalParticipants: 120,
+    checkedIn: 100,
+    rating: 4.2,
+    feedback: "Nội dung hội thảo hữu ích."
+  }
 ];
 
 // SURVEYS
@@ -135,3 +154,4 @@ export const equipment = [
 export const notifications = [
   { id: 1, userId: 4, message: "Nhắc nhở: Sự kiện bắt đầu sau 1 ngày" }
 ];
+
