@@ -54,6 +54,7 @@ const handleSubmit = (e) => {
     localStorage.setItem("currentUser", JSON.stringify(user));
 
     const routes = {
+      admin: "/admin/dashboard",
       director: "/director/dashboard",
       manager: "/manager/dashboard",
       staff: "/staff/dashboard",

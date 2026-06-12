@@ -1,48 +1,163 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '../../layouts/MainLayout';
-import { events, participants, reports } from '../../mockData';
-const CustomerDashboard = () => (
-  <MainLayout role="customer">
-    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#111827" }}>
-      <div style={{ marginBottom: "32px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg, #0891b2, #059669)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", boxShadow: "0 4px 12px rgba(8,145,178,0.25)" }}>🏢</div>
-          <h1 style={{ fontSize: "26px", fontWeight: 700, color: "#111827", margin: 0 }}>Customer Dashboard</h1>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "14px", marginBottom: "24px" }}>
-        {[{ label: "Sự kiện", value: events.length, icon: "🗓", color: "#0891b2" }, { label: "Người tham dự", value: participants.length, icon: "👥", color: "#8b5cf6" }, { label: "Báo cáo", value: reports.length, icon: "📊", color: "#059669" }].map(({ label, value, icon, color }) => (
-          <div key={label} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "14px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{icon}</div>
-            <div><div style={{ fontSize: "22px", fontWeight: 700, color: "#111827", lineHeight: 1 }}>{value}</div><div style={{ fontSize: "11px", color: "#9ca3af", marginTop: "3px" }}>{label}</div></div>
+import { events } from '../../mockData';
+
+// ===== FIX LOGIN (KHÔNG BỊ OUT) =====
+if (!localStorage.getItem("currentUser")) {
+  localStorage.setItem("currentUser", JSON.stringify({ role: "customer" }));
+}
+
+// ===== CONFIG =====
+const currentCustomer = "Đại học Kinh tế";
+const myEvents = events.filter(ev => ev.client === currentCustomer);
+
+// ===== FAKE PARTICIPANTS =====
+const generateParticipants = (event) =>
+  Array.from({ length: event.participants }, (_, i) => ({
+    id: i,
+    name: `Khách ${i + 1}`,
+    checkedIn: Math.random() > 0.5
+  }));
+
+// ===== PARTICIPANT LIST =====
+const ParticipantList = ({ event, onBack }) => {
+  const list = generateParticipants(event);
+
+  return (
+    <div style={{ padding: 20 }}>
+      <button onClick={onBack} style={{ marginBottom: 16 }}>
+        ← Quay lại
+      </button>
+
+      <h2>👥 Danh sách người tham gia ({list.length})</h2>
+
+      <div style={{
+        marginTop: 12,
+        background: "#fff",
+        borderRadius: 12,
+        border: "1px solid #eee",
+        maxHeight: 400,
+        overflowY: "auto"
+      }}>
+        {list.map((p, i) => (
+          <div key={p.id} style={{
+            padding: 12,
+            display: "flex",
+            justifyContent: "space-between",
+            borderBottom: i < list.length - 1 ? "1px solid #f3f4f6" : "none"
+          }}>
+            <span>{p.name}</span>
+            <span style={{ color: p.checkedIn ? "#16a34a" : "#f59e0b" }}>
+              {p.checkedIn ? "✓ Đã check-in" : "Chưa"}
+            </span>
           </div>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}>
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div style={{ padding: "15px 22px", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}><span style={{ fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px" }}>Sự kiện</span></div>
-          {events.map((ev, i) => (
-            <div key={ev.id} style={{ padding: "13px 22px", borderBottom: i < events.length - 1 ? "1px solid #f9fafb" : "none" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}><span style={{ fontWeight: 500, color: "#111827", fontSize: "13px" }}>{ev.name}</span><span style={{ fontSize: "11px", color: "#9ca3af" }}>{ev.date}</span></div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div style={{ flex: 1, background: "#f3f4f6", borderRadius: "3px", height: "5px" }}><div style={{ width: `${ev.progress}%`, height: "100%", background: "linear-gradient(90deg, #0891b2, #6366f1)", borderRadius: "3px" }} /></div>
-                <span style={{ fontSize: "11px", color: "#9ca3af" }}>{ev.progress}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}><span style={{ fontSize: "11px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px" }}>Người tham dự</span></div>
-            {participants.slice(0, 4).map((p, i) => <div key={p.id} style={{ padding: "10px 20px", borderBottom: i < 3 ? "1px solid #f9fafb" : "none", display: "flex", justifyContent: "space-between" }}><span style={{ fontSize: "13px", color: "#111827" }}>{p.name}</span><span style={{ fontSize: "11px", color: "#9ca3af" }}>Event #{p.eventId}</span></div>)}
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <div style={{ padding: "13px 20px", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}><span style={{ fontSize: "11px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.6px" }}>Báo cáo</span></div>
-            {reports.map((r, i) => <div key={r.id} style={{ padding: "10px 20px", borderBottom: i < reports.length - 1 ? "1px solid #f9fafb" : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: "13px", color: "#111827" }}>{r.event}</span><span style={{ fontSize: "13px", fontWeight: 700, color: "#059669" }}>{r.revenue}</span></div>)}
-          </div>
-        </div>
-      </div>
     </div>
-  </MainLayout>
-);
+  );
+};
+
+// ===== EVENT DETAIL =====
+const EventDetail = ({ event, onBack, onViewParticipants }) => {
+  return (
+    <div style={{
+      background: "#fff",
+      padding: 20,
+      borderRadius: 16,
+      border: "1px solid #eee"
+    }}>
+      <button onClick={onBack} style={{ marginBottom: 16 }}>
+        ← Quay lại
+      </button>
+
+      <h2 style={{ marginBottom: 10 }}>{event.name}</h2>
+
+      <p>📅 {event.date}</p>
+      <p>📍 {event.location}</p>
+      <p>👥 {event.participants} người tham gia</p>
+
+      <hr style={{ margin: "12px 0" }} />
+
+      <p>👤 Người lập kế hoạch: <b>Nguyễn Đức Quốc Thắng</b></p>
+      <p>🧑‍💼 Người phụ trách: <b>Võ Hải Triều</b></p>
+
+      <button
+        onClick={onViewParticipants}
+        style={{
+          marginTop: 12,
+          background: "#6366f1",
+          color: "#fff",
+          padding: "8px 16px",
+          borderRadius: 8,
+          border: "none",
+          cursor: "pointer"
+        }}
+      >
+        Xem danh sách người tham gia
+      </button>
+    </div>
+  );
+};
+
+// ===== MAIN =====
+const CustomerDashboard = () => {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [viewParticipants, setViewParticipants] = useState(false);
+
+  // 👉 View participant
+  if (selectedEvent && viewParticipants) {
+    return (
+      <MainLayout role="customer">
+        <ParticipantList
+          event={selectedEvent}
+          onBack={() => setViewParticipants(false)}
+        />
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout role="customer">
+      <div style={{ padding: 10 }}>
+
+        {selectedEvent ? (
+          <EventDetail
+            event={selectedEvent}
+            onBack={() => setSelectedEvent(null)}
+            onViewParticipants={() => setViewParticipants(true)}
+          />
+        ) : (
+          <>
+            <h1 style={{ marginBottom: 16 }}>🎯 Sự kiện của bạn</h1>
+
+            <div style={{
+              background: "#fff",
+              borderRadius: 12,
+              border: "1px solid #eee"
+            }}>
+              {myEvents.map((ev, i) => (
+                <div
+                  key={ev.id}
+                  onClick={() => setSelectedEvent(ev)}
+                  style={{
+                    padding: 14,
+                    cursor: "pointer",
+                    borderBottom: i < myEvents.length - 1 ? "1px solid #f3f4f6" : "none"
+                  }}
+                >
+                  <b>{ev.name}</b>
+                  <div style={{ fontSize: 13, color: "#6b7280" }}>
+                    📅 {ev.date} · 📍 {ev.location}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+      </div>
+    </MainLayout>
+  );
+};
+
 export default CustomerDashboard;

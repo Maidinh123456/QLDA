@@ -1,14 +1,16 @@
 // USERS
 export const users = [
+  { id: 0, username: "Admin", role: "admin", password: "123" },
   { id: 1, username: "Hieu", role: "director", password: "123" },
   { id: 2, username: "Thang", role: "manager", password: "123" },
   { id: 3, username: "Trieu", role: "staff", password: "123" },
   { id: 4, username: "Dinh", role: "participant", password: "123" },
   { id: 5, username: "Phat", role: "marketing", password: "123" },
-  { id: 6, username: "KhachHang", role: "customer", password: "123" }
+  { id: 6, username: "DHKTQD", role: "customer", password: "123" }
 ];
 // STAFF LIST (nhân viên)
 export const staffMembers = [
+  
   { id: 1, name: "Võ Hải Triệu" },
   { id: 2, name: "Nguyễn Văn Hải" },
   { id: 3, name: "Trần Thị Linh" },
@@ -139,10 +141,10 @@ export const events = [
   {
     id: 5,
     name: "Ngày hội Tuyển dụng",
-    client: "FPT Software",
+    client:"Đại học Kinh tế",
     date: "01/08/2025 - 13:00",
     location: "TP.HCM",
-    speaker: "HR Manager",
+    speaker: "Công ty A",
     budget: 60000000,
     price: 100000,                 // 💰 100,000 VNĐ/vé
     status: "Hoàn thành",
@@ -234,9 +236,26 @@ export const marketingContent = [
 
 // REPORTS (đổi sang eventId)
 export const reports = [
-  { id: 1, eventId: 2, event: "Gala Sinh viên", result: "Thành công", revenue: "200 triệu", summary: "Tỷ lệ tham dự 85%, phản hồi tốt." },
-  { id: 2, eventId: 1, event: "Hội thảo AI 2025", result: "Đạt kỳ vọng", revenue: "120 triệu", summary: "Nội dung chuyên sâu, cần cải thiện âm thanh khu vực B." },
-  { id: 3, eventId: 4, event: "Triển lãm Công nghệ", result: "Chưa đạt", revenue: "90 triệu", summary: "Một số gian hàng thiếu vật tư, cần checklist rõ ràng hơn." }
+  {
+    id: 1,
+    eventId: 2,
+    result: "Thành công",
+    revenue: 200000000,
+    totalParticipants: 300,
+    checkedIn: 250,
+    rating: 4.5,
+    feedback: "Sự kiện được tổ chức chuyên nghiệp, khách tham dự đông."
+  },
+  {
+    id: 2,
+    eventId: 1,
+    result: "Khá tốt",
+    revenue: 120000000,
+    totalParticipants: 120,
+    checkedIn: 100,
+    rating: 4.2,
+    feedback: "Nội dung hội thảo hữu ích."
+  }
 ];
 
 // SURVEYS
@@ -258,5 +277,5 @@ export const equipment = [
 
 // NOTIFICATIONS
 export const notifications = [
-  { id: 1, userId: 4, message: "Nhắc nhở: Sự kiện sắp diễn ra" },
+  { id: 1, userId: 4, message: "Nhắc nhở: Sự kiện bắt đầu sau 1 ngày" }
 ];

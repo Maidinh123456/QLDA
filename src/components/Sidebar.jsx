@@ -30,13 +30,15 @@ const menuIcons = {
   "Chuyển vé": "🔄",
   "Khảo sát": "💬",
   "Nội dung": "✍️",
+  "Quản lý người dùng":"👤",
 };
 
 const menus = {
+  
   director: [
     { path: "/director/dashboard", label: "Trang chủ" },
     { path: "/director/approve-plan", label: "Phê duyệt kế hoạch" },
-    { path: "/director/view-report", label: "Xem báo cáo" },
+    { path: "/director/view-report", label: "Báo cáo" },
   ],
   manager: [
     { path: "/manager/dashboard", label: "Trang chủ" },
@@ -57,7 +59,7 @@ const menus = {
   ],
   participant: [
     { path: "/participant/dashboard", label: "Trang chủ" },
-    { path: "/participant/search-event", label: "Tìm sự kiện" },
+    { path: "/participant/search-event", label: "Tìm kiếm" },
     { path: "/participant/view-history", label: "Lịch sử đăng ký" },
     { path: "/participant/register", label: "Đăng ký sự kiện" },
     { path: "/participant/payment", label: "Thanh toán" },
@@ -69,8 +71,14 @@ const menus = {
     { path: "/marketing/dashboard", label: "Trang chủ" },
     { path: "/marketing/content", label: "Nội dung" },
   ],
-  customer: [
-    { path: "/customer/dashboard", label: "Trang chủ" }
+customer: [
+  { path: "/customer/dashboard", label: "Trang chủ" },
+  { path: "/customer/progress", label: "Tiến độ" },
+  { path: "/customer/report", label: "Báo cáo" },
+],
+  admin: [
+  { path: "/admin/dashboard", label: "Trang chủ" },
+  { path: "/admin/users", label: "Quản lý người dùng" },
   ],
 };
 

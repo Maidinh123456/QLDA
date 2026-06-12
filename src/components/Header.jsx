@@ -33,6 +33,9 @@ const pageLabels = {
   "/marketing/content":   { title: "Nội dung"},
 
   "/customer/dashboard": { title: "Dashboard"},
+
+  "/admin/dashboard": { title: "Trang chủ"},
+  "/admin/users": { title: "Quản lý người dùng"},
 };
 
 const Header = () => {

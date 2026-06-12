@@ -5,8 +5,14 @@ import MainLayout from "./layouts/MainLayout";
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 
+//Admin
+import AdminDashboard from './pages/Admin/Dashboard';
+import AdminUser from './pages/Admin/ManagerUser';
 // Customer
 import CustomerDashboard from './pages/Customer/Dashboard';
+import CustomerProgress from './pages/Customer/CustomerProgress';
+import CustomerReport from './pages/Customer/CustomerReport';
+
 
 // Director
 import DirectorApprovePlan from './pages/Director/ApprovePlan';
@@ -54,8 +60,13 @@ const App = () => {
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
 
+        {/* Admin */}
+        <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+        <Route path="/admin/users" element={<AdminUser/>} />
         {/* Customer */}
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+        <Route path="/customer/progress" element={<CustomerProgress />} />
+        <Route path="/customer/report" element={<CustomerReport />} />
 
         {/* Director */}
         <Route path="/director/approve-plan" element={<DirectorApprovePlan />} />
